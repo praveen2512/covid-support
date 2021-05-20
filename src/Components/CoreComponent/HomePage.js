@@ -50,7 +50,6 @@ export default function HomePage() {
   }, [district]);
 
   useEffect(() => {
-    console.log(`inside hospitalList effect`);
     setFilteredList(hospitalList);
     const temp = [];
     for (let i = 1; i <= Math.ceil(hospitalList.length / itemsPerPage); i++) {
@@ -60,7 +59,13 @@ export default function HomePage() {
   }, [hospitalList]);
 
   useEffect(() => {
-    console.log(`inside filteredList effect`);
+    const lastIndex = currentPage * itemsPerPage;
+    const firstIndex = lastIndex - itemsPerPage;
+    const temp = hospitalList.slice(firstIndex, lastIndex);
+    setFilteredList(temp);
+  }, [hospitalList, currentPage]);
+
+  useEffect(() => {
   }, [filteredList]);
 
   useEffect(() => {
@@ -68,14 +73,6 @@ export default function HomePage() {
     setFilteredList(searchResult);
   }, [searchTerm]);
 
-  useEffect(() => {
-    const lastIndex = currentPage * itemsPerPage;
-    const firstIndex = lastIndex - itemsPerPage;
-    console.log(`${firstIndex} : ${lastIndex}`);
-    const temp = hospitalList.slice(firstIndex, lastIndex);    
-    console.log(`temp : ${temp}`)
-    setFilteredList(temp);
-  }, [currentPage]);
 
   const handleDistrictChange = (event, value) => {
     setDistrict(value);
@@ -122,7 +119,7 @@ export default function HomePage() {
         <Grid>
           <ul className="page-numbers">{renderPageNumbers}</ul>
         </Grid>
-        <Grid item>
+        <Grid item sm={12}>
           {hospitalList.length > 0 && (
             <>
               <TextField
