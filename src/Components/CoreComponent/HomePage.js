@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AppBar, Grid, CircularProgress, TextField, Typography } from "@material-ui/core";
+import { Pagination } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
@@ -22,6 +23,7 @@ export default function HomePage() {
   const [district, setDistrict] = useState({});
   const [hospitalList, setHospitalList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
+  const [renderList, setRenderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [pageNumbers, setPageNumbers] = useState([]);
@@ -52,27 +54,30 @@ export default function HomePage() {
   }, [district]);
 
   useEffect(() => {
-    setFilteredList(hospitalList);
-    const temp = [];
-    for (let i = 1; i <= Math.ceil(hospitalList.length / itemsPerPage); i++) {
-      temp.push(i);
-    }
-    setPageNumbers(temp);
+    setFilteredList(hospitalList);    
+    setCurrentPage(1)
   }, [hospitalList]);
 
   useEffect(() => {
-    const lastIndex = currentPage * itemsPerPage;
-    const firstIndex = lastIndex - itemsPerPage;
-    const temp = hospitalList.slice(firstIndex, lastIndex);
-    setFilteredList(temp);
-  }, [hospitalList, currentPage]);
-
-  useEffect(() => {}, [filteredList]);
+    const temp = [];
+    for (let i = 1; i <= Math.ceil(filteredList.length / itemsPerPage); i++) {
+      temp.push(i);
+    }
+    setPageNumbers(temp);
+  }, [filteredList]);
 
   useEffect(() => {
     const searchResult = searchList(hospitalList, searchTerm);
     setFilteredList(searchResult);
+    setCurrentPage(1);
   }, [searchTerm]);
+
+  useEffect(() => {
+    const lastIndex = currentPage * itemsPerPage;
+    const firstIndex = lastIndex - itemsPerPage;
+    const temp = filteredList.slice(firstIndex, lastIndex);
+    setRenderList(temp);
+  }, [filteredList, currentPage]);
 
   const handleDistrictChange = (event, value) => {
     setDistrict(value);
@@ -97,12 +102,32 @@ export default function HomePage() {
     );
   });
 
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const renderPagination = () => {
+    return(
+      <Pagination
+          count={pageNumbers.length}
+          page={currentPage}
+          onChange={handleChangePage}
+          defaultPage={1}
+          color="primary"
+          size="small"
+          showFirstButton
+          showLastButton
+          classes={{ ul: classes.paginator }}
+        />
+    )
+  }
+
   return (
     <>
       <AppBar position="static" className={classes.appBar}>
         <Grid container spacing={3} alignItems="center" justify="center">
           <Typography variant="h6" className={classes.title}>
-            Tamil Nadu Covid19 Hospital Bed Availability
+            Covid19 Hospital Bed Availability
           </Typography>
         </Grid>
       </AppBar>
@@ -128,23 +153,24 @@ export default function HomePage() {
       >
         {loading ? <CircularProgress /> : (
             <>
-              <Grid>
-                <ul className="page-numbers">{renderPageNumbers}</ul>
-              </Grid>
-              <Grid item sm={12}>
-                {hospitalList.length > 0 && (
-                  <>
+            {hospitalList.length > 0 ? (
+              <>
+                <Grid item sm={12}>
+                  {renderPagination()}
+                  {/* <ul className="page-numbers">{renderPageNumbers}</ul> */}
+                </Grid>
+                <Grid item sm={12}>
                     <TextField
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder={`Search Hospital`}
-                      fullWidth
+                      className="px-3"
                       autoFocus
                     />
-                    <DataTable hospitalList={filteredList} />
-                  </>
-                )}
-              </Grid>
+                    <DataTable hospitalList={renderList} />
+                </Grid>
+              </>
+              ) : <h2>No Hospitals found</h2>}
             </>
           )}
       </Grid>

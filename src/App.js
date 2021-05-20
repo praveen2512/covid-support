@@ -4,10 +4,9 @@ import HomePage from './Components/CoreComponent/HomePage'
 
 function App() {
   return (
-  <div style={{overflow: 'hidden'}}>
+  <div>
     <HomePage/>
   </div>
-   
   );
 }
 

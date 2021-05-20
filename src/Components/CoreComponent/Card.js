@@ -11,7 +11,7 @@ import {AccessTime, Contacts, LocationOn, Person, Phone, PhoneAndroid} from "@ma
 
 const useStyles = makeStyles({
   root: {
-    minWidth: 275,
+    // minWidth: 275,
     textAlign: "center",
     borderRadius: "10px solid black ",
     margin: "10px",
@@ -167,8 +167,8 @@ export default function SimpleCard({ data }) {
         </Grid>
         <Divider />
         {
-          ContactDetails.map((contact) => <>
-          <Grid key={contact._id} container className="">
+          ContactDetails.map((contact, idx) => <>
+          <Grid key={contact._id ? contact._id : idx } container className="">
             <Grid item xs={12} md={4} className="my-3">
               <Phone />{contact.ContactNumber !== "" ? contact.ContactNumber : "N/A"}
             </Grid>
