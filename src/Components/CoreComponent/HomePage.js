@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppBar, Grid, TextField, Typography } from "@material-ui/core";
+import { AppBar, Grid, CircularProgress, TextField, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
@@ -22,14 +22,15 @@ export default function HomePage() {
   const [district, setDistrict] = useState({});
   const [hospitalList, setHospitalList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
-  const [showHospitals, setShowHospitals] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [pageNumbers, setPageNumbers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (district && district["_id"]) {
+      setLoading(true);
       let request = {
         Districts: [district._id],
         FacilityTypes: ["CHO", "CHC", "CCC"],
@@ -40,12 +41,13 @@ export default function HomePage() {
       };
       axios
         .post("https://tncovidbeds.tnega.org/api/hospitals", request)
-        .then(async (response) => {
+        .then( (response) => {
           setHospitalList(response.data.result);
-
-          showHospitals(true);
+          setLoading(false);
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.log(`error while loading data :: ${error}`)
+        });
     }
   }, [district]);
 
@@ -124,23 +126,27 @@ export default function HomePage() {
         justify="center"
         className={classes.input}
       >
-        <Grid>
-          <ul className="page-numbers">{renderPageNumbers}</ul>
-        </Grid>
-        <Grid item sm={12}>
-          {hospitalList.length > 0 && (
+        {loading ? <CircularProgress /> : (
             <>
-              <TextField
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={`Search Hospital`}
-                fullWidth
-                autoFocus
-              />
-              <DataTable hospitalList={filteredList} />
+              <Grid>
+                <ul className="page-numbers">{renderPageNumbers}</ul>
+              </Grid>
+              <Grid item sm={12}>
+                {hospitalList.length > 0 && (
+                  <>
+                    <TextField
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder={`Search Hospital`}
+                      fullWidth
+                      autoFocus
+                    />
+                    <DataTable hospitalList={filteredList} />
+                  </>
+                )}
+              </Grid>
             </>
           )}
-        </Grid>
       </Grid>
     </>
   );
