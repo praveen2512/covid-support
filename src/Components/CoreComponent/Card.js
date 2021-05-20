@@ -1,14 +1,13 @@
 import React from "react";
-import { makeStyles, StylesProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
+import {Divider} from "@material-ui/core";
 
-import {AccessTime, LocationOn, Person, Phone} from "@material-ui/icons"
+import {AccessTime, Contacts, LocationOn, Person, Phone, PhoneAndroid} from "@material-ui/icons"
 
 const useStyles = makeStyles({
   root: {
@@ -36,9 +35,8 @@ const useStyles = makeStyles({
 
 export default function SimpleCard({ data }) {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
 
-  const { Name, Latitude, Longitude, UpdatedDateTime } = data;
+  const { ContactDetails, Name, Latitude, Longitude, UpdatedDateTime, PrimaryContactPerson, MobileNumber, Landline } = data;
   const {
     VaccantNonO2Beds,
     AllotedNonO2Beds,
@@ -50,7 +48,6 @@ export default function SimpleCard({ data }) {
     BedsAllotedForCovidTreatment,
   } = data.CovidBedDetails;
 
-  const { ContactName, ContactNumber, Timing} = data.ContactDetails[0];
   const { Line1, Line2, Line3 } = data.AddressDetail;
 
   return (
@@ -159,23 +156,39 @@ export default function SimpleCard({ data }) {
             </Typography>
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item xs={12} md={4}>
-            <Phone />{ContactNumber !== "" ? ContactNumber : "N/A"}
+        <Divider />
+        <Grid container className="">
+          <Grid item xs={12} md={6} className="my-3">
+            <Contacts />{PrimaryContactPerson !== "" ? PrimaryContactPerson : "N/A"}
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Person />{ContactName !== "" ? ContactName : "N/A"}
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <AccessTime />{Timing && Timing !== "" ? Timing : "N/A"}
+          <Grid item xs={12} md={6} className="my-3">
+            <PhoneAndroid />{MobileNumber !== "" ? MobileNumber : "N/A"}
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item xs={12} md={12}>
+        <Divider />
+        {
+          ContactDetails.map((contact) => <>
+          <Grid key={contact._id} container className="">
+            <Grid item xs={12} md={4} className="my-3">
+              <Phone />{contact.ContactNumber !== "" ? contact.ContactNumber : "N/A"}
+            </Grid>
+            <Grid item xs={12} md={4} className="my-3">
+              <Person />{contact.ContactName !== "" ? contact.ContactName : "N/A"}
+            </Grid>
+            <Grid item xs={12} md={4} className="my-3">
+              <AccessTime />{contact.Timing && contact.Timing !== "" ? contact.Timing : "N/A"}
+            </Grid>
+          </Grid>
+          <Divider />
+        </>)
+        }
+        
+        <Grid container className="">
+          <Grid item xs={12} md={12} className="my-3">
             <LocationOn />{`${Line1 && Line1 !== "" ? Line1 : '' } ${Line2 && Line2 !== "" ? ", " + Line2 : '' } ${Line3 && Line3 !== "" ? ", " + Line3 : '' }`}
           </Grid>
-          <Grid item xs={12} md={12}>
-            <a href={`https://www.google.com/maps/search/?api=1&query=${Latitude},${Longitude}`} target="_blank">Location</a>
+          <Grid item xs={12} md={12} className="my-3">
+            <a href={`https://www.google.com/maps/search/?api=1&query=${Latitude},${Longitude}`} target="_blank" rel="noreferrer">Location</a>
           </Grid> 
         </Grid>
 

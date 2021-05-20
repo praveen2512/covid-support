@@ -88,6 +88,7 @@ export default function HomePage() {
         onClick={() => {
           handlePageChange(number);
         }}
+        className={number === currentPage ? 'active-page' : ''}
       >
         {number}
       </li>
