@@ -29,6 +29,7 @@ export default function HomePage() {
   const [pageNumbers, setPageNumbers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     if (district && district["_id"]) {
@@ -46,6 +47,7 @@ export default function HomePage() {
         .then( (response) => {
           setHospitalList(response.data.result);
           setLoading(false);
+          setShowList(true)
         })
         .catch((error) => {
           console.log(`error while loading data :: ${error}`)
@@ -151,28 +153,40 @@ export default function HomePage() {
         justify="center"
         className={classes.input}
       >
-        {loading ? <CircularProgress /> : (
-            <>
-            {hospitalList.length > 0 ? (
+        {
+          !showList ? <h2>Please Select a district</h2> : <>
+            {loading ? <CircularProgress /> : (
               <>
                 <Grid item sm={12}>
-                  {renderPagination()}
-                  {/* <ul className="page-numbers">{renderPageNumbers}</ul> */}
-                </Grid>
-                <Grid item sm={12}>
-                    <TextField
+                  <TextField
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder={`Search Hospital`}
                       className="px-3"
                       autoFocus
                     />
-                    <DataTable hospitalList={renderList} />
                 </Grid>
+              {renderList.length > 0 ? (
+                <>                
+                  <Grid item sm={12}>                  
+                    {renderPagination()}
+                    {/* <ul className="page-numbers">{renderPageNumbers}</ul> */}
+                  </Grid>
+                  <Grid item sm={12}>
+                      <DataTable hospitalList={renderList} />
+                  </Grid>
+                  <Grid item sm={12}>
+                    {renderPagination()}
+                    {/* <ul className="page-numbers">{renderPageNumbers}</ul> */}
+                  </Grid>
+                </>
+                ) : <h2>No Hospitals found</h2>}
               </>
-              ) : <h2>No Hospitals found</h2>}
-            </>
-          )}
+            )}
+
+          </>
+        }
+        
       </Grid>
     </>
   );
