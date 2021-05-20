@@ -53,7 +53,7 @@ export default function HomePage() {
     setFilteredList(hospitalList);
     const temp = [];
     for (let i = 1; i <= Math.ceil(hospitalList.length / itemsPerPage); i++) {
-        temp.push(i);
+      temp.push(i);
     }
     setPageNumbers(temp);
   }, [hospitalList]);
@@ -65,14 +65,12 @@ export default function HomePage() {
     setFilteredList(temp);
   }, [hospitalList, currentPage]);
 
-  useEffect(() => {
-  }, [filteredList]);
+  useEffect(() => {}, [filteredList]);
 
   useEffect(() => {
     const searchResult = searchList(hospitalList, searchTerm);
     setFilteredList(searchResult);
   }, [searchTerm]);
-
 
   const handleDistrictChange = (event, value) => {
     setDistrict(value);
@@ -116,6 +114,15 @@ export default function HomePage() {
         <Grid item>
           <ComboBox handleDistrictChange={handleDistrictChange} />
         </Grid>
+      </Grid>
+      <Grid
+        container
+        direction="column"
+        spacing={3}
+        alignItems="center"
+        justify="center"
+        className={classes.input}
+      >
         <Grid>
           <ul className="page-numbers">{renderPageNumbers}</ul>
         </Grid>
@@ -125,7 +132,7 @@ export default function HomePage() {
               <TextField
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={`Search`}
+                placeholder={`Search Hospital`}
                 fullWidth
                 autoFocus
               />
