@@ -129,7 +129,7 @@ export default function HomePage() {
       <AppBar position="static" className={classes.appBar}>
         <Grid container spacing={3} alignItems="center" justify="center">
           <Typography variant="h6" className={classes.title}>
-            Covid Support
+            Covid Support-Know Hospital Availability
           </Typography>
         </Grid>
       </AppBar>
